@@ -7,4 +7,4 @@ Week 1
 安裝Github Desktop  
 做practice1,2,3  
 做hw1  
-上線上課程「Ｒ語言導論  
+上線上課程「Ｒ語言導論」  
