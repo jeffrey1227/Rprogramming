@@ -4,8 +4,8 @@
 
 # Week 1
 安裝R、Rstudio  
-安裝Github Desktop 
+安裝Github Desktop  
 上線上課程「Ｒ語言導論」  
-做practice1,2,3  
-完成hw1  
+做practice1,2,3  
+完成hw1  
   
