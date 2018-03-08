@@ -6,6 +6,7 @@
 **In class**  
 安裝R、Rstudio  
 安裝Github Desktop  
+  
 **At home**  
 上線上課程「Ｒ語言導論」  
 做practice1,2,3  
