@@ -12,3 +12,10 @@
 做practice1,2,3  
 完成hw1  
   
+  
+  
+# Week 2
+**In class**  
+
+
+**At home**  
