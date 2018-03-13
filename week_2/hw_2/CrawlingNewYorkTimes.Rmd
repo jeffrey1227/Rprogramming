@@ -1,0 +1,30 @@
+
+title | author | date | output
+----- | ------ | ---- | ------
+RCrawler | 陳昱鈞 | 2018/3/13 | html_document
+
+
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+RCrawler
+======
+```{r}
+library(rvest)
+
+title=read_html("https://www.nytimes.com/")   
+title=html_nodes(title,".story-heading")   
+title=html_text(title)   
+title=iconv(title,"UTF-8")  
+```
+
+Show results
+======
+```{r}
+library(knitr)
+kable(title)
+```
+
