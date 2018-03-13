@@ -4,13 +4,13 @@
 
 # Week 1
 **In class**  
-安裝R、Rstudio  
-安裝Github Desktop  
+* 安裝R、Rstudio  
+* 安裝Github Desktop  
   
 **At home**  
-上線上課程「Ｒ語言導論」  
-做practice1,2,3  
-完成hw1  
+* 上線上課程「Ｒ語言導論」  
+* 完成 practice 1, 2, 3  
+* 完成 hw1  
   
   
   
