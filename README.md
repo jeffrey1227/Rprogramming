@@ -11,7 +11,7 @@
 * 安裝Github Desktop  
   
 **At home**  
-* 上線上課程「Ｒ語言導論」  
+* 完成 Datacamp 線上課程「Ｒ語言導論」  
 * 完成 practice 1, 2, 3  
 * 完成 hw1  
   
@@ -21,5 +21,7 @@
 **In class**  
 * 爬蟲練習
 
-**At home**  
+**At home** 
+* 完成 Datacamp 線上課程「資料框整理技巧」  
+* 完成 practice 1
 * 完成 hw2
