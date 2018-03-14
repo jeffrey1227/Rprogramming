@@ -23,5 +23,5 @@
 
 **At home** 
 * 完成 Datacamp 線上課程「資料框整理技巧」  
-* 完成 practice 1
+* 完成 practice 1, 2, 3
 * 完成 hw2
