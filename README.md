@@ -25,3 +25,11 @@
 * 完成 Datacamp 線上課程「資料框整理技巧」  
 * 完成 practice 1, 2, 3
 * 完成 hw2
+  
+  
+  
+# Week 3
+**In class**  
+
+
+**At home**
