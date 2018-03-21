@@ -1,0 +1,41 @@
+
+title | author | date | output
+----- | ------ | ---- | ------
+ggplot | 陳昱鈞 | 2018/3/21 | html_document
+
+
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+ggplot
+======
+```{r}
+library(SportsAnalytics)
+library(dplyr)
+library(ggplot2)
+NBA1718 <- fetch_NBAPlayerStatistics("17-18")
+NBA1718 <- mutate(NBA1718,  Defense = TotalRebounds + Steals + Blocks)
+
+
+#我想探究團隊防守和團隊總失誤的關係，是不是防守越強大的隊伍越容易失誤？
+Teamstats <- group_by(NBA1718, Team) %>%
+  summarise(TeamDefense = sum(Defense),
+            TeamTurnovers = sum(Turnovers))
+#我針對一些疑似零星幾個數據不完整的隊伍進行篩選
+Teamstats <- filter(Teamstats, TeamDefense > 2500, TeamTurnovers > 400)
+ggplot(Teamstats, aes(x = TeamDefense, y = TeamTurnovers)) + geom_point() + geom_smooth()
+
+
+#接下來想探究進攻慾望欲強的隊伍是不是能得到越多罰球機會
+Teamstats <- group_by(NBA1718, Team) %>%
+  summarise(TeamFieldGoalsAttempted = sum(FieldGoalsAttempted),
+            TeamFreeThrowsAttempted = sum(FreeThrowsAttempted))
+#我針對一些疑似零星幾個數據不完整的隊伍進行篩選
+Teamstats <- filter(Teamstats, TeamFieldGoalsAttempted > 4000, TeamFreeThrowsAttempted > 500)
+ggplot(Teamstats, aes(x = TeamFieldGoalsAttempted, y = TeamFreeThrowsAttempted)) + geom_point() + geom_smooth()
+ 
+```
+
