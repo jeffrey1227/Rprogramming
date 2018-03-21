@@ -30,6 +30,8 @@
   
 # Week 3
 **In class**  
-
+* 觀看「TED:資料視覺化的美麗」  
 
 **At home**
+* 爬文章，了解plot(), qplot(), ggplot() 的用法  
+* 完成 hw3
