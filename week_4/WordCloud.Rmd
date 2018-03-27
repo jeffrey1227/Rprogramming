@@ -1,0 +1,43 @@
+---
+title: "WordCloud"
+author: "JeffreyChen"
+date: "2018/3/27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(Rfacebook)
+
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+
+token  = "EAACEdEose0cBAPvEDY17XqX8qxLlkXKkBEbNRkkiBZAomonHZBrvJ0x1HTKshpYJeP4Vw2uc0GiZBJDjZB1jCpdK5CLOqYadnOpOGn788YZCk4xtagqHJCdsM9G3wCND6YtZB6o2rcFZCo95sNg8ebMlXGiMswQqmFn2XjFAV9DnSWwjODEeX9t22wQgXc0HjpsTIlD3h1fiwZDZD"
+page.id <- "5281959998"
+page <- getPage(page.id, token, n = 200)
+page$message[23] <- " "
+posts <- page$message
+posts <- gsub("[[:punct:]]", replacement = " ", posts)
+posts <- gsub("\n", replacement = " ", posts)
+head(posts)
+
+docs <- Corpus(VectorSource(posts))
+docs <- tm_map(docs, removeWords, stopwords("english"))
+docs <- tm_map(docs, removeWords, c("the","The")) 
+inspect(docs)
+
+dtm <- TermDocumentMatrix(docs)
+m <- as.matrix(dtm)
+v <- sort(rowSums(m),decreasing=TRUE)
+d <- data.frame(word = names(v),freq=v)
+head(d, 10)
+
+set.seed(1234)
+wordcloud(words = d$word, freq = d$freq, min.freq = 1,
+          max.words=150, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Dark2"))
