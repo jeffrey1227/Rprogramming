@@ -35,3 +35,12 @@
 **At home**
 * 爬文章，了解plot(), qplot(), ggplot() 的用法  
 * 完成 hw3
+
+# Week 4
+**In class**  
+* 了解文字雲 
+* 了解如何使用 Facebook API 取得貼文
+
+**At home**
+* 爬文章，了解如何切中文英文詞 
+* 完成 hw4
