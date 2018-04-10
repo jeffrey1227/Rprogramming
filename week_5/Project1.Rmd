@@ -31,7 +31,7 @@ library(knitr)
 2. 網路爬蟲抓出設定的每一篇文章，並進行一些文字清洗預處理
 
 ```{r}
-token  = "EAACEdEose0cBAFxLhoIx44GqipOwjUmx8KqfoS8X1ixfSuXhq6OpZAG5oUcVa9vhmNXZCB7G6ZBVdLxF56yps7mL5AhbLIPhI2ljxwses7FbYiUnDOeKglBqeUSbAl0ACKT95vhORtXMdeF3djfeF287YP1HoZBNnNGyUldzz3n662hmtcCJ8CzyUXy3u83s63MDcx4AOAZDZD"
+token  = "EAACEdEose0cBAMfPInlxN2Co77cjiQjadh0KWvhLB4dLJX6qZC8IlU6EECrook6FPZAgfvOZCM3qquyODqAGPLq8NBSdznki1tJWCe9CQkcAWVWzjmsGnBZCZBFGrEoJj96wzqC1ZArgYRwyyei7o3iiBCcNNKCBajGAZBdOG3xfWQu9Ppod2D4V7XwgAeVQtofD6KhGB0tnQZDZD"
 page.id <- "1504603339831430"
 page <- getPage(page.id, token, n = 200)
 posts <- page$message
@@ -146,5 +146,5 @@ ggplot(tempGraph, aes(post, freq)) +
 從最後視覺化的圖看來，近期的話題圍繞著中韓領導人和貿易關稅為主，且因為是紐約時報中文版，主要是中國的話題，所以應是講述中國的貿易。 
 
 ##洞察
-1.“他”和“她”字並沒有被TF-IDF給過濾掉實在有點可惜。
+1.“他”和“她”字並沒有被TF-IDF給過濾掉實在有點可惜。  
 2.最後的圖原本中文字是無法顯示的，需要加上```{r}theme(text=element_text(family="黑體-繁 中黑", size=14)```才能正常顯示。
