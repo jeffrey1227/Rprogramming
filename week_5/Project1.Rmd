@@ -1,0 +1,150 @@
+---
+title: "Facebook New York Times Chinese"
+author: "JeffreyChen"
+date: "2018/4/10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Facebook New York Times Chinese 分析
+1. 載入所需的套件包
+```{r}
+library(Rfacebook)
+library(tm)
+library(SnowballC)
+library(wordcloud2)
+library(RColorBrewer)
+library(jiebaR)
+library(bitops)
+library(httr)
+library(RCurl)
+library(XML)
+library(NLP)
+library(tmcn)
+library(jiebaRD)
+library(knitr)
+```
+
+2. 網路爬蟲抓出設定的每一篇文章，並進行一些文字清洗預處理
+
+```{r}
+token  = "EAACEdEose0cBAFxLhoIx44GqipOwjUmx8KqfoS8X1ixfSuXhq6OpZAG5oUcVa9vhmNXZCB7G6ZBVdLxF56yps7mL5AhbLIPhI2ljxwses7FbYiUnDOeKglBqeUSbAl0ACKT95vhORtXMdeF3djfeF287YP1HoZBNnNGyUldzz3n662hmtcCJ8CzyUXy3u83s63MDcx4AOAZDZD"
+page.id <- "1504603339831430"
+page <- getPage(page.id, token, n = 200)
+posts <- page$message
+posts <- gsub("[[:punct:]]", replacement = " ", posts)
+posts <- gsub("\n", replacement = " ", posts)
+head(posts)
+```
+
+3. 建立文本資料結構與文字清洗處理
+```{r}
+docs <- Corpus(VectorSource(posts))
+docs <- tm_map(docs, removeNumbers)
+docs <- tm_map(docs, function(word) {
+  gsub("[A-Za-z0-9]", "", word)
+})
+head(docs)
+```
+
+4. 進行斷詞
+```{r}
+cc = worker()
+jieba_tokenizer = function(d){
+  unlist( segment(d[[1]], cc) )
+}
+seg = lapply(docs, jieba_tokenizer)
+
+count_token = function(d){
+  as.data.frame(table(d))
+}
+tokens = lapply(seg, count_token)
+
+n = length(seg)
+TDM = tokens[[1]]
+colNames <- c(1:n)
+for( id in c(2:n) ){
+  TDM = merge(TDM, tokens[[id]], by = "d", all = TRUE)
+  names(TDM) = c("d", colNames[1:id])
+}
+TDM[is.na(TDM)] <- 0
+kable(head(TDM))
+kable(tail(TDM))
+```
+
+5. 將已建好的 TDM 轉成 TF-IDF
+```{r}
+tf <- apply(as.matrix(TDM[,2:(n+1)]), 2, sum)
+
+library(Matrix)
+idfCal <- function(word_doc)
+{ 
+  log2( n / nnzero(word_doc) ) 
+}
+idf <- apply(as.matrix(TDM[,2:(n+1)]), 1, idfCal)
+
+doc.tfidf <- TDM
+for(x in 1:nrow(TDM)){
+  for(y in 2:ncol(TDM)){
+     doc.tfidf[x,y] <- (doc.tfidf[x,y] / tf[y]) * idf[x]
+  }
+}
+```
+
+
+6. TF-IDF Post 文章取得的重要關鍵字
+```{r}
+TopWords = data.frame()
+for( id in c(1:n) ){
+  dayMax = order(doc.tfidf[,id+1], decreasing = TRUE)
+  showResult = t(as.data.frame(doc.tfidf[dayMax[1:5],1]))
+  TopWords = rbind(TopWords, showResult)
+}
+rownames(TopWords) = colnames(doc.tfidf)[2:(n+1)]
+TopWords = droplevels(TopWords)
+kable(head(TopWords))
+
+
+TDM$d = as.character(TDM$d)
+AllTop = as.data.frame( table(as.matrix(TopWords)) )
+AllTop = AllTop[order(AllTop$Freq, decreasing = TRUE),]
+
+kable(head(AllTop))
+```
+
+7.TF-IDF Post 文章取得的重要關鍵字 TDM merge 視覺化
+```{r}
+TopNo = 6
+tempGraph = data.frame()
+for( t in c(1:TopNo) ){
+  word = matrix( rep(c(as.matrix(AllTop$Var1[t])), each = n), nrow = n )
+  temp = cbind( colnames(doc.tfidf)[2:(n+1)], t(TDM[which(TDM$d == AllTop$Var1[t]), 2:(n+1)]), word )
+  colnames(temp) = c("post", "freq", "words")
+  tempGraph = rbind(tempGraph, temp)
+  names(tempGraph) = c("post", "freq", "words")
+}
+
+library(ggplot2)
+library(varhandle)
+tempGraph$freq = unfactor(tempGraph$freq)
+ggplot(tempGraph, aes(post, freq)) + 
+  geom_point(aes(color = words, shape = words), size = 5) +
+  geom_line(aes(group = words, linetype = words)) +
+  theme(text=element_text(family="黑體-繁 中黑", size=14))
+```
+  
+
+
+
+
+
+
+##後記
+從最後視覺化的圖看來，近期的話題圍繞著中韓領導人和貿易關稅為主，且因為是紐約時報中文版，主要是中國的話題，所以應是講述中國的貿易。 
+
+##洞察
+1.“他”和“她”字並沒有被TF-IDF給過濾掉實在有點可惜。
+2.最後的圖原本中文字是無法顯示的，需要加上```{r}theme(text=element_text(family="黑體-繁 中黑", size=14)```才能正常顯示。
