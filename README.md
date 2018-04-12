@@ -51,4 +51,5 @@
 * 了解word2vec  
   
 **At home**  
-* 完成[https://github.com/jeffrey1227/Rprogramming/week_5/Project1.html](https://github.com/jeffrey1227/Rprogramming/week_5/Project1.html)  
+* 完成 Project 1  
+link: [https://github.com/jeffrey1227/Rprogramming/blob/master/week_5/Project1.html](https://github.com/jeffrey1227/Rprogramming/blob/master/week_5/Project1.html)  
