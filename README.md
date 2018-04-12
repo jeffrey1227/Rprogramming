@@ -51,4 +51,4 @@
 * 了解word2vec  
   
 **At home**  
-* 完成project 1  
+* 完成[project 1](https://github.com/jeffrey1227/Rprogramming/week_5/Project1.html)  
