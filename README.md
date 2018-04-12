@@ -43,4 +43,12 @@
 
 **At home**
 * 爬文章，了解如何切中文英文詞 
-* 完成 hw4
+* 完成 hw4  
+
+# Week 5
+**In class**
+* 了解TF-IDF
+* 了解word2vec  
+  
+**At home**  
+* 完成project 1  
