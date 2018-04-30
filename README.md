@@ -53,3 +53,11 @@
 **At home**  
 * 完成 Project 1  
 link: [https://jeffrey1227.github.io/Rprogramming/week_5/Project1.html](https://jeffrey1227.github.io/Rprogramming/week_5/Project1.html)  
+
+# Week 7  
+**At home**  
+看機器學習的一些影片  
+
+# Week 8  
+**At home**
+
