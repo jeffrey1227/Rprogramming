@@ -1,0 +1,349 @@
+---
+title: "Titanic Survival Prediction"
+author: "JeffreyChen"
+date: "2018/5/2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# 1 摘要
+首先，我分析決定生還或決定罹難的變數，發現乘客有沒有上救生艇是很重要的變數。  
+當然為了預測，我也用了很多其他的變數(例如稱謂、性別等等)，提高準確率。  
+在學習方面，我使用的是隨機樹(Random Forest)。  
+
+# 2 載入資料及探討變數決定生還的重要性
+## 2.1 載入所需的library
+
+```{r}
+library('gridExtra')
+library('ggplot2') 
+library('ggthemes')
+library('scales')
+library('dplyr')
+library('mice') 
+library('randomForest')
+```
+
+## 2.2 載入訓練及測試資料
+```{r}
+# 讀檔（訓練集及測試集）
+train.data <- read.csv("titanicTrain.csv", stringsAsFactors = F, na.strings = c(""))
+test.data <- read.csv("titanicQuestion.csv", stringsAsFactors = F, na.strings = c(""))
+train.data <- train.data[1:1000, ]
+test.data <- test.data[1:309, ]
+full <- rbind(train.data, test.data)
+str(full)
+
+full$survived <- as.factor(full$survived)
+full$pclass <- as.factor(full$pclass)
+full$sex <- as.factor(full$sex)
+train <- full[1:1000,]
+```
+
+## 2.3 分析什麼樣的人為生還者的機率較高
+###2.3.1 生還人數
+```{r}
+# 生還人數
+ggplot(train, aes(x = survived, fill = survived)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Survival') +
+  geom_label(stat = 'count',aes(label = ..count..), size = 6) +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+```
+
+
+### 2.3.2 探討性別及小孩和生還之間的關係
+```{r}
+# 男女小孩生還比較
+ggplot(train, aes(x = sex, fill = survived)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Survival of Male and Female') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+
+kids.survival <- train[(!is.na(train$age)) & (train$age < 10), ]
+ggplot(kids.survival, aes(x = survived, fill = survived)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Survival of Kids aged under 10') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+
+
+```
+  
+可以看出男人的生還率最低，女人及小孩的生還率較高。  
+
+### 2.3.3 探討座艙等級和生還之間的關係
+
+```{r}
+#依照座艙等級分類
+ggplot(train, aes(x = pclass, fill = survived)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Survival of Different Class Levels') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+```
+  
+  
+可以發現座艙等級越高，生還率越高。  
+
+### 2.3.4 探討上船與否和生還之間的關係
+```{r}
+full[!is.na(full$boat), "onboat"] <- "1"
+full[is.na(full$boat), "onboat"] <- "0"
+
+ggplot(full, aes(x = onboat, fill = onboat)) +
+  geom_bar(stat = 'count') +
+  labs(x = '\nON or NOT onboat') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+
+ggplot(full[1:1000,], aes(x = onboat, fill = survived)) +
+  geom_bar(stat = 'count') +
+  labs(x = '\nSurvival of ON or NOT onboat') +
+  theme_grey(base_size = 16) 
+```
+  
+  
+上船者有很大的機率生還，反之則難逃一劫。  
+
+## 2.4 探討上救生艇的人都是些什麼人  
+### 2.4.1 性別和上船與否的關係
+```{r}
+MF.OB <- ggplot(full, aes(x = onboat, fill = sex)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Sex of those who were and weren\'t Onboat') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+MF.OB
+```
+  
+  
+上船者有一大部分是女人，沒上船的有一大部分是男人。  
+
+
+### 2.4.2 座艙等級和上船與否的關係
+```{r}
+CL.OB <- ggplot(full, aes(x = onboat, fill = pclass)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Sex of those who were and weren\'t Onboat') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+CL.OB
+```
+  
+  
+上船者有一大部分是座艙等級最高的，沒上船的有一半是座艙等級最低的。  
+
+
+### 2.4.3 年齡和上船與否的關係
+```{r}
+full$age <- floor(full$age)
+ggplot(full[!is.na(full$age) & (full$age <= 10),], aes(x = onboat, fill = onboat)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Kids ON or NOT onboat') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+
+ggplot(full[!is.na(full$age) & (full$age >= 65),], aes(x = onboat, fill = onboat)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Elders ON or NOT onboat') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+
+ggplot(full[!is.na(full$age) & (full$age < 65) & (full$age > 10),], aes(x = onboat, fill = onboat)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Others ON or NOT onboat') +
+  theme_grey(base_size = 16) +
+  coord_polar("x", start=0)
+```
+  
+  
+發現小孩蠻多有上船，老人大多沒上船，其他人則為沒上船者多一些。  
+
+
+## 2.5 找出新變量  
+### 2.5.1 觀察稱謂變量  
+
+```{r}
+# 從乘客名字中提取稱謂 
+full$title <- gsub('(.*, )|(\\..*)', '', full$name) 
+# 查看按照性別劃分的稱謂數量
+table(full$sex, full$title)
+# 對於那些出現頻率較低的稱謂合併為一類
+rare_title <- c('Dona', 'Lady', 'the Countess','Capt', 'Col', 'Don', 'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer', 'Mme')
+full$title[full$title == 'Mlle']<- 'Miss' 
+full$title[full$title == 'Ms'] <- 'Miss'
+full$title[full$title %in% rare_title] <- 'Rare Title'
+table(full$sex, full$title)
+
+ggplot(full[1:1000,]) + 
+  geom_histogram(aes(x = title, fill = survived), stat="count")
+```
+  
+可得知女性稱謂生還率較高，女性生還率高（符合前述事實）。
+
+```{r}
+full$surname <- sapply(full$name, function(x) strsplit(x, split = '[,.]')[[1]][1])
+```
+最後從乘客姓名中，提取姓氏。  
+
+
+### 2.5.2 觀察家庭大小變量  
+
+```{r}
+full$familycount <- full$sibsp + full$parch + 1
+
+ggplot(full[1:1000, ], aes(x = familycount, fill = survived)) + 
+  geom_bar(stat='count', position='dodge') + 
+  scale_x_continuous(breaks=c(1:8)) + labs(x = 'Family Size') + 
+  theme_gray()
+
+full$familysize[full$familycount == 1] <- 'single' 
+full$familysize[full$familycount < 5 & full$familycount > 1]<- 'small' 
+full$familysize[full$familycount > 4] <- 'large'
+
+ggplot(full[1:1000, ], aes(x = familysize, fill = survived)) +
+  geom_bar(stat = 'count', position = 'fill') +
+  labs(x = 'Survival of Different Family Size') +
+  theme_grey(base_size = 16)
+```
+  
+一個人的罹難率高，家庭人數二到四（小家庭）的生存率最高，家庭人數四個以上（大家庭）生存率低。
+
+
+# 3 填補缺失值  
+## 3.1 填補出發（乘客登船）港口（embarked）缺失值  
+
+```{r}
+sum(is.na(full$embarked))
+full[is.na(full$embarked),]
+```
+發現有兩行有缺失值：第169和第285行  
+
+我估計對於有相同艙位等級（pclass）和票價（fare）的乘客也許有著相同的登船港口位置(
+embarked)  
+```{r}
+ggplot(full, aes(x = embarked, y = fare, fill = factor(pclass))) + 
+  geom_boxplot() + 
+  geom_hline(aes(yintercept=80), colour='red', linetype='dashed', lwd=2) + 
+  scale_y_continuous(labels=dollar_format()) + 
+  theme_gray()
+```
+  
+港口Ｃ的票價的中位數為80，因此我們可以把乘客169, 285的出發港口缺失值替換為‘Ｃ’  
+
+
+```{r}
+full[c(169, 285),"embarked"] <- 'C'
+```
+
+## 3.2 填補票價缺失值
+
+```{r}
+sum(is.na(full$fare))
+full[is.na(full$fare),]
+```
+有一個缺失值，在第1226行。  
+這位乘客是座艙等級3且出發港口為Ｓ，所以我決定找出有同樣條件的人的票價的中位數，當作此缺失值之票價。  
+
+
+
+```{r}
+ggplot(full[full$pclass == '3' & full$embarked == 'S', ], aes(x = fare)) + 
+  geom_density(fill = '#99d6ff', alpha=0.4) + 
+  geom_vline(aes(xintercept=median(fare, na.rm=T)),colour='red', linetype='dashed', lwd=1) +
+  scale_x_continuous(labels=dollar_format()) + 
+  theme_few()
+
+median(full[!is.na(full$fare) & (full$embarked == 'S') & (full$pclass == '3'), "fare"])
+```
+找出中位數大概在8左右，我們用median函數找出實際值，為8.05。
+
+```{r}
+full[1226,"fare"] <- median(full[!is.na(full$fare) & (full$embarked == 'S') & (full$pclass == '3'), "fare"])
+```
+把此乘客的票價設定為同樣條件的人的票價的中位數。  
+
+## 3.3 填補年齡缺失值
+
+```{r}
+sum(is.na(full$age))
+```
+發現缺失值過多，有263個。  
+所以我決定用mice包去填補它。  
+
+
+```{r}
+# 使因子變量因子化 
+factor_vars <- c('pclass', 'sex', 'embarked', 'title', 'surname', 'familysize') 
+full[factor_vars] <- lapply(full[factor_vars],function(x) as.factor(x)) 
+# 設置隨機種子 
+set.seed(2018)  
+# 執行多重插補法，剔除一些沒什麼用的變量: 
+mice.age <- mice(full[, !names(full) %in% c('name', 'ticket', 'cabin', 'surname', 'survived', 'home.dest', 'body')], method='rf') 
+# 保存完整輸出 
+mice.output <- complete(mice.age)
+```
+
+### 繪製年齡分布圖，看一下填補前後的差別  
+```{r}
+par(mfrow=c(1,2)) 
+hist(full$age, freq=F, main='Age: Original Data', col='orange', ylim=c(0,0.04)) 
+hist(mice.output$age, freq=F, main='Age: MICE Output', col='red', ylim=c(0,0.04))
+```
+  
+效果不錯！  
+
+
+```{r}
+# 對原年齡數據進行更換
+full$age <- mice.output$age
+sum(is.na(full$age))
+```
+確認年齡缺失值已全數填補。  
+
+
+# 4 預測生還與否
+#### 我使用的是隨機樹，針對原訓練資料做一次預測，效果不錯。
+```{r}
+train <- full[1:1000, ]
+test <- full[1001:1309,]
+
+set.seed(2018)
+rf_model <- randomForest(survived ~ pclass + sex + age + sibsp 
+                         + parch + fare + embarked + title + familysize + onboat, data = train)
+
+```
+
+
+```{r}
+prediction.train <- predict(rf_model, train)
+correction.rate <- sum(prediction.train == full[1:1000, "survived"]) / 1000
+correction.rate
+```
+針對原訓練資料，正確率不錯，有99％左右！  
+  
+  
+### 針對測試資料做預測  
+```{r}
+prediction <- predict(rf_model, test)
+answer <- data.frame(survived = prediction )
+
+ggplot(answer, aes(x = survived, fill = survived)) +
+  geom_bar(stat = 'count') +
+  labs(x = 'Prediction of Survival') +
+  theme_grey(base_size = 16)
+
+```
+  
+看一下生還與罹難人數比較。  
+
+### 寫入檔案  
+```{r}
+write.csv(answer, file = "predict1.csv", row.names = FALSE)
+```
+ 
