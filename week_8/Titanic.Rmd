@@ -216,7 +216,7 @@ ggplot(full[1:1000, ], aes(x = familysize, fill = survived)) +
 
 
 # 3 填補缺失值  
-## 3.1 填補出發（乘客登船）港口（embarked）缺失值  
+## 3.1 填補出發港口（embarked）缺失值  
 
 ```{r}
 sum(is.na(full$embarked))
@@ -241,7 +241,7 @@ ggplot(full, aes(x = embarked, y = fare, fill = factor(pclass))) +
 full[c(169, 285),"embarked"] <- 'C'
 ```
 
-## 3.2 填補票價缺失值
+## 3.2 填補票價（fare）缺失值
 
 ```{r}
 sum(is.na(full$fare))
@@ -268,7 +268,7 @@ full[1226,"fare"] <- median(full[!is.na(full$fare) & (full$embarked == 'S') & (f
 ```
 把此乘客的票價設定為同樣條件的人的票價的中位數。  
 
-## 3.3 填補年齡缺失值
+## 3.3 填補年齡（age）缺失值
 
 ```{r}
 sum(is.na(full$age))

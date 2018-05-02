@@ -365,7 +365,7 @@ ggplot(full[1:1000, ], aes(x = familysize, fill = survived)) +
 <div class="section level1">
 <h1>3 填補缺失值</h1>
 <div id="embarked" class="section level2">
-<h2>3.1 填補出發（乘客登船）港口（embarked）缺失值</h2>
+<h2>3.1 填補出發港口（embarked）缺失值</h2>
 <pre class="r"><code>sum(is.na(full$embarked))</code></pre>
 <pre><code>## [1] 2</code></pre>
 <pre class="r"><code>full[is.na(full$embarked),]</code></pre>
@@ -390,8 +390,8 @@ ggplot(full[1:1000, ], aes(x = familysize, fill = survived)) +
 <p>港口Ｃ的票價的中位數為80，因此我們可以把乘客169, 285的出發港口缺失值替換為‘Ｃ’</p>
 <pre class="r"><code>full[c(169, 285),&quot;embarked&quot;] &lt;- 'C'</code></pre>
 </div>
-<div class="section level2">
-<h2>3.2 填補票價缺失值</h2>
+<div id="fare" class="section level2">
+<h2>3.2 填補票價（fare）缺失值</h2>
 <pre class="r"><code>sum(is.na(full$fare))</code></pre>
 <pre><code>## [1] 1</code></pre>
 <pre class="r"><code>full[is.na(full$fare),]</code></pre>
@@ -416,8 +416,8 @@ ggplot(full[1:1000, ], aes(x = familysize, fill = survived)) +
 <pre class="r"><code>full[1226,&quot;fare&quot;] &lt;- median(full[!is.na(full$fare) &amp; (full$embarked == 'S') &amp; (full$pclass == '3'), &quot;fare&quot;])</code></pre>
 <p>把此乘客的票價設定為同樣條件的人的票價的中位數。</p>
 </div>
-<div class="section level2">
-<h2>3.3 填補年齡缺失值</h2>
+<div id="age" class="section level2">
+<h2>3.3 填補年齡（age）缺失值</h2>
 <pre class="r"><code>sum(is.na(full$age))</code></pre>
 <pre><code>## [1] 263</code></pre>
 <p>發現缺失值過多，有263個。<br />
