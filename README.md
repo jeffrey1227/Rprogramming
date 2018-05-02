@@ -61,4 +61,4 @@ link: [https://jeffrey1227.github.io/Rprogramming/week_5/Project1.html](https://
 # Week 8  
 **At home**
 * 完成Project 2: 鐵達尼號生還人數預測  
-link: []  
+link: [https://jeffrey1227.github.io/Rprogramming/week_8/Titanic.html](https://jeffrey1227.github.io/Rprogramming/week_8/Titanic.html)
