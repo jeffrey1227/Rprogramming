@@ -1,0 +1,178 @@
+---
+title: "Keras for clothing prediction using fashion_mnist dataset"
+author: "第一組"
+date: "2018年6月5日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require("knitr")
+opts_knit$set(root.dir = "~/Desktop")
+```
+
+```{r}
+knitr::include_graphics("/Users/jeffreychen/Desktop/fashionmnist.png")
+```
+
+##安裝Keras，並使用fashion_mnist的dataset
+
+***
+
+此dataset中有十種衣著的圖片，分別以0到10表示：<br/>
+
+類别|描述|中文|
+|--------|----|----|
+|0|T-shirt/top|T恤/上衣|
+|1|Trouser|褲子|
+|2|Pullover|套頭衫|
+|3|Dress|連衣裙|
+|4|Coat|外套|
+|5|Sandal|凉鞋|
+|6|Shirt|襯衫|
+|7|Sneaker|運動鞋|
+|8|Bag|背包|
+|9|Ankle boot|短靴|
+<br/>
+```{r}
+library(keras)
+install_keras()
+fashion_mnist <- dataset_fashion_mnist()
+```
+
+```{r}
+x_train <- fashion_mnist$train$x
+y_train <- fashion_mnist$train$y
+x_test <- fashion_mnist$test$x
+y_test <- fashion_mnist$test$y
+
+# reshape
+x_train <- array_reshape(x_train, c(nrow(x_train), 784))
+x_test <- array_reshape(x_test, c(nrow(x_test), 784))
+# rescale
+x_train <- x_train / 255
+x_test <- x_test / 255
+
+y_train <- to_categorical(y_train, 10)
+y_test <- to_categorical(y_test, 10)
+```
+
+## 1. Try layer_dropout rate as 0.4 and 0.3
+***
+
+```{r}
+
+model <- keras_model_sequential() 
+model %>% 
+  layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
+  layer_dropout(rate = 0.4) %>% 
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 10, activation = 'softmax')
+
+summary(model)
+
+model %>% compile(
+  loss = 'categorical_crossentropy',
+  optimizer = optimizer_rmsprop(),
+  metrics = c('accuracy')
+)
+```
+
+```{r}
+
+#Then, try validation_split as 0.2
+history <- model %>% fit(
+  x_train, y_train, 
+  epochs = 30, batch_size = 128, 
+  validation_split = 0.2
+)
+
+plot(history)
+
+model %>% evaluate(x_test, y_test)
+
+model %>% evaluate(x_train, y_train)
+
+
+
+#Then, try validation_split as 0.1
+
+history <- model %>% fit(
+  x_train, y_train, 
+  epochs = 30, batch_size = 128, 
+  validation_split = 0.1
+)
+
+plot(history)
+
+model %>% evaluate(x_test, y_test)
+
+model %>% evaluate(x_train, y_train)
+
+```
+
+## 2. Try layer_dropout rate as 0.3 and 0.2
+***
+```{r}
+
+model <- keras_model_sequential() 
+model %>% 
+  layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
+  layer_dropout(rate = 0.3) %>% 
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dropout(rate = 0.2) %>%
+  layer_dense(units = 10, activation = 'softmax')
+
+summary(model)
+
+model %>% compile(
+  loss = 'categorical_crossentropy',
+  optimizer = optimizer_rmsprop(),
+  metrics = c('accuracy')
+)
+
+```
+
+```{r}
+
+#Then, try validation_split as 0.2
+history <- model %>% fit(
+  x_train, y_train, 
+  epochs = 30, batch_size = 128, 
+  validation_split = 0.2
+)
+
+plot(history)
+
+model %>% evaluate(x_test, y_test)
+
+model %>% evaluate(x_train, y_train)
+
+
+
+#Then, try validation_split as 0.1
+
+history <- model %>% fit(
+  x_train, y_train, 
+  epochs = 30, batch_size = 128, 
+  validation_split = 0.1
+)
+
+plot(history)
+
+model %>% evaluate(x_test, y_test)
+
+model %>% evaluate(x_train, y_train)
+```
+  
+  
+## 結語  
+***
+用不同的參數，對測試的資料跑出來的準確率大約是0.88  
+  
+對訓練資料重新預測的準確率大約是0.92  
+  
+不同參數的差別只在於損失程度不同  
+  
+validation_split用0.2的話損失程度會比較小  
