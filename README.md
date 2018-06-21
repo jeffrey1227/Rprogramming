@@ -76,4 +76,4 @@ link: [https://jeffrey1227.github.io/Rprogramming/Project_5/Project_5.html](http
   
 # Final Project  
 * 完成Project: 電影票房預測    
-link: [https://jeffrey1227.github.io/Rprogramming/CSXFinal/CSX_Final.pdf](https://jeffrey1227.github.io/Rprogramming/CSXFinal/CSX_Final.pdf)  
+: [https://jeffrey1227.github.io/Rprogramming/CSXFinal/CSX_Final.pdf](https://jeffrey1227.github.io/Rprogramming/CSXFinal/CSX_Final.pdf)  
