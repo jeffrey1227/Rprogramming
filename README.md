@@ -71,4 +71,9 @@ link: [https://jeffrey1227.github.io/Rprogramming/Project_2/Project2_finalversio
 # Week 14  
 **At home**
 * 完成Project: 服裝辨識    
-link: [https://jeffrey1227.github.io/Rprogramming/Project_5/Project_5.html](https://jeffrey1227.github.io/Rprogramming/Project_5/Project_5.html)
+link: [https://jeffrey1227.github.io/Rprogramming/Project_5/Project_5.html](https://jeffrey1227.github.io/Rprogramming/Project_5/Project_5.html)  
+  
+  
+# Final Project  
+* 完成Project: 電影票房預測    
+link: [https://jeffrey1227.github.io/Rprogramming/CSXFinal/CSX_Final.pdf](https://jeffrey1227.github.io/Rprogramming/CSXFinal/CSX_Final.pdf)  
